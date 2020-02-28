@@ -97,7 +97,6 @@ class EventBot(Bot):
             if 'required' not in q.keys(): break # if required not specified, leave as default (CHANGE LATER TO HAVE REQUIRED=FALSE BY DEFAULT?)
             assert isinstance(q['required'], bool)
             custom_q = custom_qs[custom_qs_text.index(q['question'])]
-            print(custom_q.text)
             switch = custom_q.find_elements_by_xpath('div/div/a')[-1]
             checkbox = custom_q.find_elements_by_xpath('div/div/input')[-1]
             if checkbox.is_selected() and q['required'] == False: # if already marked as required but we don't want it required
