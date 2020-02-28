@@ -72,6 +72,7 @@ class EventBot(Bot):
                             option_input = self.driver.find_element_by_xpath(f'//input[@id="id_group-qchoices-{idx}-answer"]')
                         option_input.send_keys(option)
 
+                    # SET CONDITIONAL LOGIC FOR THIS QUESTION
                     if 'conditionals' in q.keys():
                         print('SETTING CONDITIONAL LOGIC')
                         # CLICK BTN TO ENABLE CONDITIONAL LOGIC IF NOT ALREADY ENABLED
@@ -87,3 +88,18 @@ class EventBot(Bot):
                             ask_input.send_keys(q['conditionals'][key]['question'])
                 self.driver.find_element_by_xpath('//input[@id="question_save"]').click()
                 # self.click_btn('save')
+        print('toggling REQUIRED flag')
+        custom_qs = self.driver.find_elements_by_xpath('//div[@id="customQuestionsDiv"]/div')
+        custom_qs_text = [q.text for q in custom_qs]
+        for r in ['\nDelete', '\nMove down', '\nMove up', '\nSettings']:
+            custom_qs_text = [q.replace(r, '') for q in custom_qs_text]
+        for q in questions: # assert that 'required' is correctly set to true or false
+            if 'required' not in q.keys(): break # if required not specified, leave as default (CHANGE LATER TO HAVE REQUIRED=FALSE BY DEFAULT?)
+            assert isinstance(q['required'], bool)
+            custom_q = custom_qs[custom_qs_text.index(q['question'])]
+            print(custom_q.text)
+            switch = custom_q.find_elements_by_xpath('div/div/a')[-1]
+            checkbox = custom_q.find_elements_by_xpath('div/div/input')[-1]
+            if checkbox.is_selected() and q['required'] == False: # if already marked as required but we don't want it required
+                switch.click() # toggle the switch
+
